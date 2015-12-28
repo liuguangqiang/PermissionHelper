@@ -49,14 +49,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void requestCameraPermission() {
-        PermissionHelper.getInstance().requestPermission(MainActivity.this, Manifest.permission.CAMERA);
+        PermissionHelper.getInstance().requestPermission(this, Manifest.permission.CAMERA);
     }
 
     private void requestLocationPermission() {
         if (PermissionHelper.getInstance().hasPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION)) {
             locationGranted();
         } else {
-            PermissionHelper.getInstance().requestPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION);
+            PermissionHelper.getInstance().requestPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
         }
     }
 
