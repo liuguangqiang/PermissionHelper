@@ -27,6 +27,7 @@ import com.liuguangqiang.permissionhelper.annotations.PermissionGranted;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 /**
  * A helper for checking and requesting permissions for app that targeting Android M (API >= 23)
@@ -86,14 +87,20 @@ public class PermissionHelper {
      */
     private void invokeGrantedMethod(Object obj, String permission) {
         Class clazz = obj.getClass();
+        PermissionGranted permissionGranted;
+
         for (Method method : clazz.getMethods()) {
             if (method.isAnnotationPresent(PermissionGranted.class)) {
-                PermissionGranted permissionGranted = method.getAnnotation(PermissionGranted.class);
+                permissionGranted = method.getAnnotation(PermissionGranted.class);
                 if (permissionGranted.permission().equals(permission)) {
-                    // Method must be void so that we can invoke it
-                    if (method.getParameterTypes().length > 0) {
-                        throw new RuntimeException("Cannot execute non-void method " + method.getName());
+                    if (method.getModifiers() != Modifier.PUBLIC) {
+                        throw new IllegalArgumentException(String.format("Annotation method %s must be public.", method));
                     }
+
+                    if (method.getParameterTypes().length > 0) {
+                        throw new RuntimeException(String.format("Cannot execute non-void method %s.", method));
+                    }
+
                     try {
                         method.invoke(obj);
                     } catch (IllegalAccessException e) {
@@ -114,14 +121,20 @@ public class PermissionHelper {
      */
     private void invokeDeniedMethod(Object obj, String permission) {
         Class clazz = obj.getClass();
+        PermissionDenied permissionDenied;
+
         for (Method method : clazz.getMethods()) {
             if (method.isAnnotationPresent(PermissionDenied.class)) {
-                PermissionDenied permissionDenied = method.getAnnotation(PermissionDenied.class);
+                permissionDenied = method.getAnnotation(PermissionDenied.class);
                 if (permissionDenied.permission().equals(permission)) {
-                    // Method must be void so that we can invoke it
-                    if (method.getParameterTypes().length > 0) {
-                        throw new RuntimeException("Cannot execute non-void method " + method.getName());
+                    if (method.getModifiers() != Modifier.PUBLIC) {
+                        throw new IllegalArgumentException(String.format("Annotation method %s must be public.", method));
                     }
+
+                    if (method.getParameterTypes().length > 0) {
+                        throw new RuntimeException(String.format("Cannot execute non-void method %s.", method));
+                    }
+
                     try {
                         method.invoke(obj);
                     } catch (IllegalAccessException e) {
