@@ -1,7 +1,7 @@
 # PermissionHelper
 A helper for checking and requesting permissions for app that targeting Android M.
 
-##screenshot
+##Screenshot
 ![image](arts/screenshot.jpg)
 
 ##Usage

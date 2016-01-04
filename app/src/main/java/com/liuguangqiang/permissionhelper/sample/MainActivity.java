@@ -5,15 +5,15 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.liuguangqiang.permissionhelper.annotations.PermissionDenied;
 import com.liuguangqiang.permissionhelper.annotations.PermissionGranted;
 import com.liuguangqiang.permissionhelper.PermissionHelper;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,20 +26,22 @@ public class MainActivity extends AppCompatActivity {
 
     private void initViews() {
         Button btnCamera = (Button) findViewById(R.id.btn_permission_camera);
-        btnCamera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                requestCameraPermission();
-            }
-        });
+        btnCamera.setOnClickListener(this);
 
         Button btnLocation = (Button) findViewById(R.id.btn_permission_location);
-        btnLocation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        btnLocation.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.btn_permission_camera:
+                requestCameraPermission();
+                break;
+            case R.id.btn_permission_location:
                 requestLocationPermission();
-            }
-        });
+                break;
+        }
     }
 
     @Override
@@ -48,10 +50,20 @@ public class MainActivity extends AppCompatActivity {
         PermissionHelper.getInstance().onRequestPermissionsResult(this, permissions, grantResults);
     }
 
+    /**
+     * Request Permission CAMERA.
+     */
     private void requestCameraPermission() {
-        PermissionHelper.getInstance().requestPermission(this, Manifest.permission.CAMERA);
+        if (PermissionHelper.getInstance().hasPermission(getApplicationContext(), Manifest.permission.CAMERA)) {
+            cameraGranted();
+        } else {
+            PermissionHelper.getInstance().requestPermission(this, Manifest.permission.CAMERA);
+        }
     }
 
+    /**
+     * Request Permission ACCESS_FINE_LOCATION.
+     */
     private void requestLocationPermission() {
         if (PermissionHelper.getInstance().hasPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION)) {
             locationGranted();
@@ -62,22 +74,26 @@ public class MainActivity extends AppCompatActivity {
 
     @PermissionGranted(permission = Manifest.permission.CAMERA)
     public void cameraGranted() {
-        Log.i("PermissionHelper", "cameraGranted");
+        toast("Permission CAMERA has been granted.");
     }
 
     @PermissionDenied(permission = Manifest.permission.CAMERA)
     public void cameraDenied() {
-        Log.i("PermissionHelper", "cameraDenied");
+        toast("Permission CAMERA has been denied.");
     }
 
     @PermissionGranted(permission = Manifest.permission.ACCESS_FINE_LOCATION)
     public void locationGranted() {
-        Log.i("PermissionHelper", "locationGranted");
+        toast("Permission ACCESS_FINE_LOCATION has been granted.");
     }
 
     @PermissionDenied(permission = Manifest.permission.ACCESS_FINE_LOCATION)
     public void locationDenied() {
-        Log.i("PermissionHelper", "locationDenied");
+        toast("Permission ACCESS_FINE_LOCATION has been denied.");
+    }
+
+    private void toast(String msg) {
+        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
     }
 
 }
