@@ -18,9 +18,12 @@ package com.liuguangqiang.permissionhelper;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 
 import com.liuguangqiang.permissionhelper.annotations.PermissionDenied;
 import com.liuguangqiang.permissionhelper.annotations.PermissionGranted;
@@ -31,10 +34,12 @@ import java.lang.reflect.Modifier;
 
 /**
  * A helper for checking and requesting permissions for app that targeting Android M (API >= 23)
- * <p>
+ * <p/>
  * Created by Eric on 15/12/28.
  */
 public class PermissionHelper {
+
+    private static final String TAG = "PermissionHelper";
 
     private static PermissionHelper instance = new PermissionHelper();
 
@@ -60,13 +65,54 @@ public class PermissionHelper {
      * @param permission
      */
     public void requestPermission(Activity context, String permission) {
-        if (hasPermission(context, permission)) {
-            return;
-        }
-
-        ActivityCompat.requestPermissions(context, new String[]{permission}, 0);
+        requestPermission(context, permission, null);
     }
 
+    /**
+     * Request the permission.
+     *
+     * @param context
+     * @param permission
+     * @param rationale
+     */
+    public void requestPermission(Activity context, String permission, String rationale) {
+        if (hasPermission(context, permission)) {
+            invokeGrantedMethod(context, permission);
+        } else if (!TextUtils.isEmpty(rationale) && !ActivityCompat.shouldShowRequestPermissionRationale(context, permission)) {
+            showRequestPermissionRationale(context, permission, rationale);
+        } else {
+            ActivityCompat.requestPermissions(context, new String[]{permission}, 0);
+        }
+    }
+
+    /**
+     * Show UI with rationale for requesting a permission.
+     *
+     * @param activity
+     * @param permission
+     * @param rationale
+     */
+    private void showRequestPermissionRationale(final Activity activity, final String permission, String rationale) {
+        AlertDialog dialog = new AlertDialog.Builder(activity)
+                .setMessage(rationale)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ActivityCompat.requestPermissions(activity, new String[]{permission}, 0);
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, null).create();
+        dialog.show();
+    }
+
+    /**
+     * Callback for the result from requesting permissions. This method
+     * is invoked for every call on {@link #requestPermission(Activity, String, String)}.
+     *
+     * @param obj
+     * @param permissions
+     * @param grantResults
+     */
     public void onRequestPermissionsResult(Object obj, String[] permissions, int[] grantResults) {
         if (isGranted(grantResults)) {
             invokeGrantedMethod(obj, permissions[0]);
