@@ -15,6 +15,8 @@ import com.liuguangqiang.permissionhelper.PermissionHelper;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
+    private static final String TAG = "PermissionHelper";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,22 +56,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * Request Permission CAMERA.
      */
     private void requestCameraPermission() {
-        if (PermissionHelper.getInstance().hasPermission(getApplicationContext(), Manifest.permission.CAMERA)) {
-            cameraGranted();
-        } else {
-            PermissionHelper.getInstance().requestPermission(this, Manifest.permission.CAMERA);
-        }
+        PermissionHelper.getInstance().requestPermission(this, Manifest.permission.CAMERA, "You need to allow access to CAMERA");
     }
 
     /**
      * Request Permission ACCESS_FINE_LOCATION.
      */
     private void requestLocationPermission() {
-        if (PermissionHelper.getInstance().hasPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION)) {
-            locationGranted();
-        } else {
-            PermissionHelper.getInstance().requestPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
-        }
+        PermissionHelper.getInstance().requestPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
     }
 
     @PermissionGranted(permission = Manifest.permission.CAMERA)
