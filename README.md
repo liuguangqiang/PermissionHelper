@@ -9,7 +9,7 @@ A helper for checking and requesting permissions for app that targeting Android 
 ###Gradle
 ```
 dependencies {
-   	compile 'com.github.liuguangqiang.permissionhelper:permissionhelper:0.0.1'
+   	compile 'com.github.liuguangqiang.permissionhelper:permissionhelper:0.1.0'
 }
 ```
 
@@ -18,7 +18,7 @@ dependencies {
 <dependency>
   	<groupId>com.github.liuguangqiang.permissionhelper</groupId>
   	<artifactId>permissionhelper</artifactId>
-  	<version>0.0.1</version>
+  	<version>0.1.0</version>
   	<type>aar</type>
 </dependency>
 ```
